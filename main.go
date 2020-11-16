@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -27,6 +28,7 @@ func handler(res http.ResponseWriter, r *http.Request) {
 		log.Printf("error parsing update, %s", err.Error())
 		return
 	}
+	fmt.Println(update)
 
 	userCmd := types.ParseCommand(update.Message.Text)
 	log.Printf(userCmd)
@@ -77,5 +79,6 @@ func startCmd(chatID int, text string) (string, error) {
 }
 
 func main() {
-	http.ListenAndServe(":"+os.Getenv("PORT"), http.HandlerFunc(handler))
+	fmt.Println(os.Getenv("PORT"))
+	http.ListenAndServe("0.0.0.0:"+os.Getenv("PORT"), http.HandlerFunc(handler))
 }
