@@ -4,8 +4,9 @@ import "os"
 
 // Update is the type of request that telegram sends once u send message to the bot
 type Update struct {
-	UpdateID int     `json:"update_id"`
-	Message  Message `json:"message"`
+	UpdateID      int           `json:"update_id"`
+	Message       Message       `json:"message"`
+	CallbackQuery CallbackQuery `json:"callback_query"`
 }
 
 // Message is the structure of the message sent to the bot
@@ -26,6 +27,44 @@ type User struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	UserName  string `json:"username"`
+}
+
+// CallbackQuery gives the structure of the callback that is received once user clicks on a button
+type CallbackQuery struct {
+	ID   string `json:"id"`
+	From User   `json:"from"`
+	Data string `json:"data"`
+}
+
+// Buttons is the structure for sending buttons with chat in telegram
+type Buttons struct {
+	InlineKeyboard [][]struct {
+		Text         string `json:"text"`
+		CallbackData string `json:"callback_data"`
+	} `json:"inline_keyboard"`
+}
+
+// CreateInlineButtons creates inline buttons
+// TODO create a loop to create columns and rows of buttons while also taking the input in the same manner, an 2D array
+func (but *Buttons) CreateInlineButtons(cols, rows int, arguments ...string) {
+	but.InlineKeyboard = make([][]struct {
+		Text         string "json:\"text\""
+		CallbackData string "json:\"callback_data\""
+	}, cols)
+
+	but.InlineKeyboard[0] = make([]struct {
+		Text         string "json:\"text\""
+		CallbackData string "json:\"callback_data\""
+	}, rows)
+
+	iterator := 0
+	for col := 0; col < cols; col++ {
+		for row :=0; row < rows; row++ {
+			but.InlineKeyboard[col][row].Text = arguments[iterator]
+			but.InlineKeyboard[col][row].CallbackData = arguments[iterator + 1]
+			iterator = row + 2
+		}
+	}
 }
 
 const telegramAPIBaseURL string = "https://api.telegram.org/bot"

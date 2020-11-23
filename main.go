@@ -2,15 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
-	"strconv"
 
 	"github.com/hjoshi123/fetchitemsbot/types"
+	"github.com/hjoshi123/fetchitemsbot/utils"
 )
 
 func parseTelegramUpdate(r *http.Request) (*types.Update, error) {
@@ -28,57 +25,87 @@ func handler(res http.ResponseWriter, r *http.Request) {
 		log.Printf("error parsing update, %s", err.Error())
 		return
 	}
-	fmt.Println(update)
+	log.Printf(update.Message.Text)
+	log.Println(update.CallbackQuery.Data)
 
-	userCmd := types.ParseCommand(update.Message.Text)
-	log.Printf(userCmd)
+	userCmd, err := types.ParseCommand(update.Message.Text)
+	callbackData := update.CallbackQuery.Data
 
-	if userCmd == "/start" {
-		var output string
-		output = types.BotName + " has the following commands for you \n"
+	log.Println(userCmd)
+	// TODO Parse Arguments of the command too
+
+	var output string
+	var keyboard []byte = nil
+
+	if err != nil && callbackData == "" {
+		output = "Sorry you entered the wrong command. Here are the list of supported commands \n"
 		for command, desc := range types.Commands {
 			output += command + " : " + desc + "\n"
 		}
-		startResponse, errStart := startCmd(update.Message.Chat.ID, output)
-		if errStart != nil {
-			log.Printf("got error %s from telegram, response body is %s", errStart.Error(), startResponse)
-		} else {
-			log.Printf("punchline %s successfully distributed to chat id %d", output, update.Message.Chat.ID)
-		}
-	} else if userCmd == "/news" {
-
-	} else if userCmd == "/port" {
-
 	}
-}
 
-func startCmd(chatID int, text string) (string, error) {
-	log.Printf("Sending %s to chat_id: %d", text, chatID)
-	response, err := http.PostForm(
-		types.TelegramAPI,
-		url.Values{
-			"chat_id": {strconv.Itoa(chatID)},
-			"text":    {text},
-		})
+	// Check if there is a callback from an inline button
+	if callbackData == "GN" {
+		output, err = utils.GetNewsForResponse("the-times-of-india")
+		log.Println(output)
+
+		if err != nil {
+			resp, err := utils.SendTextToTelegram(update.CallbackQuery.From.ID, output, keyboard)
+			if err != nil {
+				log.Printf("got error %s from telegram, response body is %s", err.Error(), resp)
+			} else {
+				log.Printf("punchline %s successfully distributed to chat id %d", output, update.Message.Chat.ID)
+			}
+			return
+		}
+	} else if callbackData == "BN" {
+		output, err = utils.GetNewsForResponse("business-insider")
+		if err != nil {
+			resp, err := utils.SendTextToTelegram(update.CallbackQuery.From.ID, output, keyboard)
+			if err != nil {
+				log.Printf("got error %s from telegram, response body is %s", err.Error(), resp)
+			} else {
+				log.Printf("punchline %s successfully distributed to chat id %d", output, update.Message.Chat.ID)
+			}
+			return
+		}
+	} else {
+		if userCmd == "/start" {
+			output = "Hello I'm " + types.BotName + " I can do the following things for you \n\n"
+			for command, desc := range types.Commands {
+				output += command + " : " + desc + "\n"
+			}
+		} else if userCmd == "/news" {
+			but := types.Buttons{}
+			but.CreateInlineButtons(1, 2, "General News", "GN", "Business News", "BN")
+
+			keyboard, err = json.Marshal(but)
+			if err != nil {
+				log.Printf(err.Error())
+				return
+			}
+
+			output += "Great.. Almost there.. Please choose which kind of news you want\n"
+		} else if userCmd == "/port" {
+
+		}
+	}
+
+	var resp string
+	if update.Message.Chat.ID != 0 {
+		resp, err = utils.SendTextToTelegram(update.Message.Chat.ID, output, keyboard)
+	} else if update.CallbackQuery.From.ID != 0 {
+		resp, err = utils.SendTextToTelegram(update.CallbackQuery.From.ID, output, keyboard)
+	}
 
 	if err != nil {
-		log.Printf("error when posting text to the chat: %s", err.Error())
-		return "", err
+		log.Printf("got error %s from telegram, response body is %s", err.Error(), resp)
+	} else {
+		log.Printf("punchline %s successfully distributed to chat id %d", output, update.Message.Chat.ID)
 	}
-	defer response.Body.Close()
-
-	var bodyBytes, errRead = ioutil.ReadAll(response.Body)
-	if errRead != nil {
-		log.Printf("error in parsing telegram answer %s", errRead.Error())
-		return "", err
-	}
-	bodyString := string(bodyBytes)
-	log.Printf("Body of Telegram Response: %s", bodyString)
-
-	return bodyString, nil
 }
 
 func main() {
-	fmt.Println(os.Getenv("PORT"))
+	log.Printf(os.Getenv("PORT"))
 	http.ListenAndServe("0.0.0.0:"+os.Getenv("PORT"), http.HandlerFunc(handler))
 }
