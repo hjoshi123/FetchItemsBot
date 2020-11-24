@@ -45,7 +45,6 @@ type Buttons struct {
 }
 
 // CreateInlineButtons creates inline buttons
-// TODO create a loop to create columns and rows of buttons while also taking the input in the same manner, an 2D array
 func (but *Buttons) CreateInlineButtons(cols, rows int, arguments ...string) {
 	but.InlineKeyboard = make([][]struct {
 		Text         string "json:\"text\""
