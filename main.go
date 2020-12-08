@@ -78,7 +78,7 @@ func handler(res http.ResponseWriter, r *http.Request) {
 
 			output += "Great.. Almost there.. Please choose which kind of news you want\n"
 		} else if userCmd == "/word" {
-			output, err := utils.GetWordOfTheDay()
+			output, err = utils.GetWordOfTheDay()
 			if err != nil {
 				resp, err := utils.SendTextToTelegram(update.Message.Chat.ID, output, keyboard)
 				if err != nil {
