@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -9,6 +10,16 @@ import (
 
 	"github.com/hjoshi123/fetchitemsbot/types"
 )
+
+// ParseTelegramUpdate takes in the request from telegram and parses Update from it
+func ParseTelegramUpdate(r *http.Request) (*types.Update, error) {
+	var update types.Update
+	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+		return nil, err
+	}
+
+	return &update, nil
+}
 
 // SendTextToTelegram sends text to the user
 func SendTextToTelegram(chatID int, text string, keyboard []byte) (string, error) {

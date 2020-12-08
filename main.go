@@ -10,17 +10,8 @@ import (
 	"github.com/hjoshi123/fetchitemsbot/utils"
 )
 
-func parseTelegramUpdate(r *http.Request) (*types.Update, error) {
-	var update types.Update
-	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
-		return nil, err
-	}
-
-	return &update, nil
-}
-
 func handler(res http.ResponseWriter, r *http.Request) {
-	update, err := parseTelegramUpdate(r)
+	update, err := utils.ParseTelegramUpdate(r)
 	if err != nil {
 		log.Printf("error parsing update, %s", err.Error())
 		return
