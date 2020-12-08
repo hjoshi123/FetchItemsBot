@@ -75,7 +75,7 @@ func GetNewsForResponse(source string) (string, error) {
 // GetWordOfTheDay gets the word of the day
 func GetWordOfTheDay() (string, error) {
 	output := ""
-	url := fmt.Sprintf(types.WordnikAPI+"?date=%s", time.Now().Format("2006-01-02"))
+	url := fmt.Sprintf(types.WordnikAPI+"&date=%s", time.Now().Format("2006-01-02"))
 	log.Println(url)
 
 	word, err := types.GetWordOfTheDay(url)
@@ -89,6 +89,8 @@ func GetWordOfTheDay() (string, error) {
 	output += word.Definitons[0].PartOfSpeech + "\n\n"
 	output += "Here's an example sentence for you\n\n"
 	output += word.Examples[0].Text
+
+	log.Println(output)
 
 	return output, nil
 }
