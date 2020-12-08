@@ -85,10 +85,10 @@ func GetWordOfTheDay() (string, error) {
 	}
 
 	output += "Here's your word of the day.. \n\n"
-	output += word.Word + "\n"
-	output += word.Definitons[0].Text + "    ."
-	output += word.Definitons[0].PartOfSpeech + "\n\n"
-	output += "Here's an example sentence for you\n\n"
+	output += "<b>" + word.Word + "</b>" + "\n"
+	output += word.Definitons[0].Text + " ("
+	output += word.Definitons[0].PartOfSpeech + ")" + "\n\n"
+	output += "Here's an example sentence for you:\n\n"
 	output += word.Examples[0].Text
 
 	log.Println(output)
