@@ -2,11 +2,13 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/hjoshi123/fetchitemsbot/types"
 )
@@ -66,6 +68,27 @@ func GetNewsForResponse(source string) (string, error) {
 	output += "Here's your headlines for the day \n\n"
 	output += article.Title + "\n"
 	output += article.Description
+
+	return output, nil
+}
+
+// GetWordOfTheDay gets the word of the day
+func GetWordOfTheDay() (string, error) {
+	output := ""
+	url := fmt.Sprintf(types.WordnikAPI+"?date=%s", time.Now().Format("2006-01-02"))
+	log.Println(url)
+
+	word, err := types.GetWordOfTheDay(url)
+	if err != nil {
+		output += "Sorry... couldn't get the word. Please try again later..."
+		return output, err
+	}
+
+	output += "Here's your word of the day.. \n\n"
+	output += word.Definitons[0].Text + "    ."
+	output += word.Definitons[0].PartOfSpeech + "\n\n"
+	output += "Here's an example sentence for you\n\n"
+	output += word.Examples[0].Text
 
 	return output, nil
 }

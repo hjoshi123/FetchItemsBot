@@ -77,8 +77,17 @@ func handler(res http.ResponseWriter, r *http.Request) {
 			}
 
 			output += "Great.. Almost there.. Please choose which kind of news you want\n"
-		} else if userCmd == "/port" {
-
+		} else if userCmd == "/word" {
+			output, err := utils.GetWordOfTheDay()
+			if err != nil {
+				resp, err := utils.SendTextToTelegram(update.Message.Chat.ID, output, keyboard)
+				if err != nil {
+					log.Printf("got error %s from telegram, response body is %s", err.Error(), resp)
+				} else {
+					log.Printf("punchline %s successfully distributed to chat id %d", output, update.Message.Chat.ID)
+				}
+				return
+			}
 		}
 	}
 

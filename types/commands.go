@@ -9,6 +9,7 @@ var Commands = map[string]string{
 	"/start": "Start the bot help",
 	"/news":  "Get the top headlines",
 	"/port":  "Get stock portfolio rates right now",
+	"/word": "Get word of the day",
 }
 
 // BotName is the name of the bot

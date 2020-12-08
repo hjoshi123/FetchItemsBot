@@ -2,6 +2,17 @@ package types
 
 import "os"
 
+const telegramAPIBaseURL string = "https://api.telegram.org/bot"
+const telegramAPISendMessage string = "/sendMessage"
+const telegramTokenEnv string = "TELEGRAM_BOT_TOKEN"
+const wordnikToken string = "WORDNIK_TOKEN"
+
+// TelegramAPI is the api to which we should send the message to
+var TelegramAPI string = telegramAPIBaseURL + os.Getenv(telegramTokenEnv) + telegramAPISendMessage
+
+// WordnikAPI is the base url for getting words
+var WordnikAPI string = "https://api.wordnik.com/v4/words.json/" + "wordOfTheDay" + "?api_key=" + os.Getenv(wordnikToken)
+
 // Update is the type of request that telegram sends once u send message to the bot
 type Update struct {
 	UpdateID      int           `json:"update_id"`
@@ -58,17 +69,10 @@ func (but *Buttons) CreateInlineButtons(cols, rows int, arguments ...string) {
 
 	iterator := 0
 	for col := 0; col < cols; col++ {
-		for row :=0; row < rows; row++ {
+		for row := 0; row < rows; row++ {
 			but.InlineKeyboard[col][row].Text = arguments[iterator]
-			but.InlineKeyboard[col][row].CallbackData = arguments[iterator + 1]
+			but.InlineKeyboard[col][row].CallbackData = arguments[iterator+1]
 			iterator = row + 2
 		}
 	}
 }
-
-const telegramAPIBaseURL string = "https://api.telegram.org/bot"
-const telegramAPISendMessage string = "/sendMessage"
-const telegramTokenEnv string = "TELEGRAM_BOT_TOKEN"
-
-// TelegramAPI is the api to which we should send the message to
-var TelegramAPI string = telegramAPIBaseURL + os.Getenv(telegramTokenEnv) + telegramAPISendMessage
