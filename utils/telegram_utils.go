@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"time"
 
 	"github.com/hjoshi123/fetchitemsbot/types"
 )
@@ -75,7 +74,12 @@ func GetNewsForResponse(source string) (string, error) {
 // GetWordOfTheDay gets the word of the day
 func GetWordOfTheDay() (string, error) {
 	output := ""
-	url := fmt.Sprintf(types.WordnikAPI+"&date=%s", time.Now().Format("2006-01-02"))
+
+	// Generate Random time
+	randTime := generateRandomTime()
+	formatted := fmt.Sprintf("%d-%02d-%02d", randTime.Year(), randTime.Month(), randTime.Day())
+
+	url := fmt.Sprintf(types.WordnikAPI+"&date=%s", formatted)
 	log.Println(url)
 
 	word, err := types.GetWordOfTheDay(url)
