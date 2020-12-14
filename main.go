@@ -61,6 +61,7 @@ func handler(res http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
+		// No callbacks hence start looking for commands in user inputs
 		if userCmd == "/start" {
 			output = "Hello I'm " + types.BotName + " I can do the following things for you \n\n"
 			for command, desc := range types.Commands {
@@ -88,6 +89,8 @@ func handler(res http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
+		} else if userCmd == "/port" {
+			output = "Sorry... This command is under implementation..."
 		}
 	}
 
