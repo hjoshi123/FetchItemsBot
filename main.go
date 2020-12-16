@@ -89,9 +89,10 @@ func handler(res http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-		} else if userCmd == "/port" {
-			output = "Sorry... This command is under implementation..."
 		}
+		// else if userCmd == "/port" {
+		// 	output = "Sorry... This command is under implementation..."
+		// }
 	}
 
 	var resp string
