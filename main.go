@@ -80,7 +80,7 @@ func handler(res http.ResponseWriter, r *http.Request) {
 			}
 		} else if userCmd == "/news" {
 			but := types.Buttons{}
-			but.CreateInlineButtons(1, 3, "General News", "GN", "Business News", "BN", "Tech News", "TN")
+			but.CreateInlineButtons(1, 3, "General News", "GN", "Business News", "BN", "TN", "Tech News")
 
 			keyboard, err = json.Marshal(but)
 			if err != nil {
