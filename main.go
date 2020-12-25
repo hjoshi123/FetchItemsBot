@@ -45,7 +45,7 @@ func handler(res http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Printf("got error %s from telegram, response body is %s", err.Error(), resp)
 			} else {
-				log.Printf("punchline %s successfully distributed to chat id %d", output, update.Message.Chat.ID)
+				log.Printf("punchline %s successfully distributed to chat id %d", output, update.CallbackQuery.From.ID)
 			}
 			return
 		}
@@ -56,7 +56,18 @@ func handler(res http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Printf("got error %s from telegram, response body is %s", err.Error(), resp)
 			} else {
-				log.Printf("punchline %s successfully distributed to chat id %d", output, update.Message.Chat.ID)
+				log.Printf("punchline %s successfully distributed to chat id %d", output, update.CallbackQuery.From.ID)
+			}
+			return
+		}
+	} else if callbackData == "TN" {
+		output, err = utils.GetNewsForResponse("techcrunch")
+		if err != nil {
+			resp, err := utils.SendTextToTelegram(update.CallbackQuery.From.ID, output, keyboard)
+			if err != nil {
+				log.Printf("got error %s from telegram, response body is %s", err.Error(), resp)
+			} else {
+				log.Printf("punchline %s successfully distributed to chat id %d", output, update.CallbackQuery.From.ID)
 			}
 			return
 		}
@@ -69,7 +80,7 @@ func handler(res http.ResponseWriter, r *http.Request) {
 			}
 		} else if userCmd == "/news" {
 			but := types.Buttons{}
-			but.CreateInlineButtons(1, 2, "General News", "GN", "Business News", "BN")
+			but.CreateInlineButtons(1, 3, "General News", "GN", "Business News", "BN", "Tech News", "TN")
 
 			keyboard, err = json.Marshal(but)
 			if err != nil {

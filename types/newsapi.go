@@ -12,6 +12,7 @@ import (
 type Articles struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
+	URL         string `json:"url"`
 }
 
 // News is the list of articles

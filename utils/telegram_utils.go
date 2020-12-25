@@ -66,7 +66,8 @@ func GetNewsForResponse(source string) (string, error) {
 
 	output += "Here's your headlines for the day \n\n"
 	output += article.Title + "\n"
-	output += article.Description
+	output += article.Description + "\n"
+	output += article.URL
 
 	return output, nil
 }
