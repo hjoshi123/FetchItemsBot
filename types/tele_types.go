@@ -72,7 +72,7 @@ func (but *Buttons) CreateInlineButtons(cols, rows int, arguments ...string) {
 		for row := 0; row < rows; row++ {
 			but.InlineKeyboard[col][row].Text = arguments[iterator]
 			but.InlineKeyboard[col][row].CallbackData = arguments[iterator+1]
-			iterator = row + 2
+			iterator = iterator + 2
 		}
 	}
 }
